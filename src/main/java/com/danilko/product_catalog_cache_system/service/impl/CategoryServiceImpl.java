@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +30,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Optional<CategoryReadDto> findById(Long id) {
-        return categoryRepository.findById(id).map(categoryReadDtoMapper::mapFrom);
+    public CategoryReadDto findById(Long id) {
+        var  categoryOptional = categoryRepository.findById(id);
+        return categoryOptional.map(categoryReadDtoMapper::mapFrom).orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + id));
     }
 
     @Transactional

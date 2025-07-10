@@ -22,7 +22,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -47,8 +46,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Optional<ProductReadDto> findById(Long id) {
-        return productRepository.findById(id).map(productReadDtoMapper::mapFrom);
+    public ProductReadDto findById(Long id) {
+        var productOptional = productRepository.findById(id);
+        return productOptional.map(productReadDtoMapper::mapFrom).orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
     }
 
     @Transactional

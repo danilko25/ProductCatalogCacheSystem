@@ -7,12 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ProductService {
     Page<ProductReadDto> findAll(Pageable pageable);
     List<ProductReadDto> findByCategoryId(Long id);
-    Optional<ProductReadDto> findById(Long id);
+    ProductReadDto findById(Long id);
     ProductReadDto save(ProductCreateEditDto productCreateEditDto);
     ProductReadDto update(Long id, ProductCreateEditDto productCreateEditDto) throws MethodArgumentNotValidException;
     void  deleteById(Long id);
