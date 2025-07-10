@@ -15,6 +15,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -64,13 +68,25 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional
     @Override
-    public ProductReadDto update(Long id, ProductCreateEditDto productCreateEditDto) {
+    public ProductReadDto update(Long id, ProductCreateEditDto productCreateEditDto) throws MethodArgumentNotValidException {
 
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
 
-        Category category = categoryRepository.findById(productCreateEditDto.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productCreateEditDto.getCategoryId()));
+        if (product.getCategory().getId() != productCreateEditDto.getCategoryId()) {
+            BindingResult bindingResult = new BeanPropertyBindingResult(productCreateEditDto, "productCreateEditDto");
+            bindingResult.addError(new FieldError(
+                    "productCreateEditDto",
+                    "categoryId",
+                    productCreateEditDto.getCategoryId(),
+                    false,
+                    null,
+                    null,
+                    "Category ID cannot be changed for an existing product."
+            ));
+
+            throw new MethodArgumentNotValidException(null, bindingResult);
+        }
 
         productCreateEditDtoMapper.mapTo(productCreateEditDto, product);
         product.setLastUpdateDate(LocalDateTime.now());

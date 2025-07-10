@@ -14,6 +14,6 @@ public interface ProductService {
     List<ProductReadDto> findByCategoryId(Long id);
     Optional<ProductReadDto> findById(Long id);
     ProductReadDto save(ProductCreateEditDto productCreateEditDto);
-    ProductReadDto update(Long id, ProductCreateEditDto productCreateEditDto);
+    ProductReadDto update(Long id, ProductCreateEditDto productCreateEditDto) throws MethodArgumentNotValidException;
     void  deleteById(Long id);
 }
