@@ -11,6 +11,10 @@ import com.danilko.product_catalog_cache_system.repository.ProductJpaRepository;
 import com.danilko.product_catalog_cache_system.service.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,18 +43,21 @@ public class ProductServiceImpl implements ProductService {
         return products.map(productReadDtoMapper::mapFrom);
     }
 
+    @Cacheable(value = "productList", key = "#id")
     @Override
     public List<ProductReadDto> findByCategoryId(Long id) {
         var productsByCategory = productRepository.findAllByCategoryId(id);
         return productsByCategory.stream().map(productReadDtoMapper::mapFrom).toList();
     }
 
+    @Cacheable(value = "product", key = "#id")
     @Override
     public ProductReadDto findById(Long id) {
         var productOptional = productRepository.findById(id);
         return productOptional.map(productReadDtoMapper::mapFrom).orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
     }
 
+    @CacheEvict(value = "productList",  key = "#productCreateEditDto.categoryId")
     @Transactional
     @Override
     public ProductReadDto save(ProductCreateEditDto productCreateEditDto) {
@@ -66,6 +73,8 @@ public class ProductServiceImpl implements ProductService {
         return productReadDtoMapper.mapFrom(savedProduct);
     }
 
+    @CacheEvict(value = "productList",  key = "#productCreateEditDto.categoryId")
+    @CachePut(value = "product", key = "#id")
     @Transactional
     @Override
     public ProductReadDto update(Long id, ProductCreateEditDto productCreateEditDto) throws MethodArgumentNotValidException {
@@ -95,6 +104,10 @@ public class ProductServiceImpl implements ProductService {
         return productReadDtoMapper.mapFrom(updatedProduct);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "product", key = "#id"),
+            @CacheEvict(value = "productList", allEntries = true)
+    })
     @Transactional
     @Override
     public void deleteById(Long id) {
