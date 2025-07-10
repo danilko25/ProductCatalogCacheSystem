@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -147,32 +148,27 @@ public class ProductJpaRepositoryTest {
 
 
     @Test
-    void testFindAllByCategoryId_Pagination_Category100_FirstPage() {
-        // 100, 'Test Electronics'
+    void testFindAllByCategoryId_AllProductsForCategory100() {
         Long categoryId = 100L;
-        Pageable pageable = PageRequest.of(0, 2);
 
-        Page<Product> productsPage = productRepository.findAllByCategoryId(categoryId, pageable);
+        List<Product> products = productRepository.findAllByCategoryId(categoryId);
 
-        assertThat(productsPage).isNotNull();
-        assertThat(productsPage.getContent()).hasSize(2);
-        assertThat(productsPage.getTotalElements()).isEqualTo(4);
-        assertThat(productsPage.getTotalPages()).isEqualTo(2);
-        assertThat(productsPage.getContent().get(0).getName()).isEqualTo("Test Laptop Alpha");
-        assertThat(productsPage.getContent().get(1).getName()).isEqualTo("Test Phone Beta");
+        assertThat(products).isNotNull();
+        assertThat(products).hasSize(4);
+
+        assertThat(products.get(0).getName()).isEqualTo("Test Laptop Alpha");
+        assertThat(products.get(1).getName()).isEqualTo("Test Phone Beta");
+        assertThat(products.get(2).getName()).isEqualTo("Test Headphones Gamma");
+        assertThat(products.get(3).getName()).isEqualTo("Test Out Of Stock Item");
     }
-
 
     @Test
     void testFindAllByCategoryId_NonExistingCategory() {
         Long nonExistingCategoryId = 999L;
-        Pageable pageable = PageRequest.of(0, 10);
 
-        Page<Product> productsPage = productRepository.findAllByCategoryId(nonExistingCategoryId, pageable);
+        List<Product> products = productRepository.findAllByCategoryId(nonExistingCategoryId);
 
-        assertThat(productsPage).isNotNull();
-        assertThat(productsPage.getContent()).isEmpty();
-        assertThat(productsPage.getTotalElements()).isEqualTo(0);
-        assertThat(productsPage.getTotalPages()).isEqualTo(0);
+        assertThat(products).isNotNull();
+        assertThat(products).isEmpty();
     }
 }
