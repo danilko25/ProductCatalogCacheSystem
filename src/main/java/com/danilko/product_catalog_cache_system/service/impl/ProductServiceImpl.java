@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,9 +37,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductReadDto> findByCategoryId(Long id, Pageable pageable) {
-        var productsByCategory = productRepository.findAllByCategoryId(id, pageable);
-        return productsByCategory.map(productReadDtoMapper::mapFrom);
+    public List<ProductReadDto> findByCategoryId(Long id) {
+        var productsByCategory = productRepository.findAllByCategoryId(id);
+        return productsByCategory.stream().map(productReadDtoMapper::mapFrom).toList();
     }
 
     @Override
@@ -72,7 +73,6 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productCreateEditDto.getCategoryId()));
 
         productCreateEditDtoMapper.mapTo(productCreateEditDto, product);
-        product.setCategory(category);
         product.setLastUpdateDate(LocalDateTime.now());
         var updatedProduct = productRepository.save(product);
 

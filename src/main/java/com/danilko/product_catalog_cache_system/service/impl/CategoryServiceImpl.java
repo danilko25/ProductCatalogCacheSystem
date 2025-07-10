@@ -9,11 +9,10 @@ import com.danilko.product_catalog_cache_system.repository.CategoryJpaRepository
 import com.danilko.product_catalog_cache_system.service.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,9 +25,9 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryCreateEditMapper categoryCreateEditMapper;
 
     @Override
-    public Page<CategoryReadDto> findAll(Pageable pageable) {
-        var categories = categoryRepository.findAll(pageable);
-        return categories.map(categoryReadDtoMapper::mapFrom);
+    public List<CategoryReadDto> findAll() {
+        var categories = categoryRepository.findAll();
+        return categories.stream().map(categoryReadDtoMapper::mapFrom).toList();
     }
 
     @Override
