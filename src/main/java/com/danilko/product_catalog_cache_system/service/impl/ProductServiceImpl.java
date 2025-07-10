@@ -32,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductReadDto> findAll(Pageable pageable) {
-        var products = productRepository.findAll(pageable);
+        var products = productRepository.findAllWithCategory(pageable);
         return products.map(productReadDtoMapper::mapFrom);
     }
 
