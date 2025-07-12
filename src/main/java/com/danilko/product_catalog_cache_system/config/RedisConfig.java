@@ -43,7 +43,7 @@ public class RedisConfig {
         JavaType productListType = objectMapper.getTypeFactory()
                 .constructCollectionType(List.class, ProductReadDto.class);
         Jackson2JsonRedisSerializer<List<ProductReadDto>> productListSerializer =
-                new Jackson2JsonRedisSerializer<>(productListType);
+                new Jackson2JsonRedisSerializer<>(objectMapper, productListType);
         RedisCacheConfiguration productListConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(10))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
@@ -69,9 +69,9 @@ public class RedisConfig {
 
         return RedisCacheManager.builder(connectionFactory)
                 .withCacheConfiguration("product", productConfig)
-                .withCacheConfiguration("products", productListConfig)
+                .withCacheConfiguration("productList", productListConfig)
                 .withCacheConfiguration("category", categoryConfig)
-                .withCacheConfiguration("categories", categoryListConfig)
+                .withCacheConfiguration("categoryList", categoryListConfig)
                 .build();
     }
 }
