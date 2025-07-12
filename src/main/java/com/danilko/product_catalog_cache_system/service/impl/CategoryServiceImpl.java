@@ -27,21 +27,24 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryReadDtoMapper categoryReadDtoMapper;
     private final CategoryCreateEditMapper categoryCreateEditMapper;
 
-    @Cacheable(value = "categoryList")
+    private static final String CATEGORY_LIST_CACHE = "categoryList";
+    private static final String SINGLE_CATEGORY_CACHE = "category";
+
+    @Cacheable(value = CATEGORY_LIST_CACHE)
     @Override
     public List<CategoryReadDto> findAll() {
         var categories = categoryRepository.findAll();
         return categories.stream().map(categoryReadDtoMapper::mapFrom).toList();
     }
 
-    @Cacheable(value = "category", key = "#id")
+    @Cacheable(value = SINGLE_CATEGORY_CACHE, key = "#id")
     @Override
     public CategoryReadDto findById(Long id) {
         var  categoryOptional = categoryRepository.findById(id);
         return categoryOptional.map(categoryReadDtoMapper::mapFrom).orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + id));
     }
 
-    @CacheEvict(value = "categoryList", allEntries = true)
+    @CacheEvict(value = CATEGORY_LIST_CACHE, allEntries = true)
     @Transactional
     @Override
     public CategoryReadDto save(CategoryCreateEditDto categoryCreateEditDto) {
@@ -49,8 +52,8 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryReadDtoMapper.mapFrom(savedCategory);
     }
 
-    @CacheEvict(value = "categoryList", allEntries = true)
-    @CachePut(value = "category", key = "#id")
+    @CacheEvict(value = CATEGORY_LIST_CACHE, allEntries = true)
+    @CachePut(value = SINGLE_CATEGORY_CACHE, key = "#id")
     @Transactional
     @Override
     public CategoryReadDto update(Long id, CategoryCreateEditDto categoryCreateEditDto) {
@@ -64,8 +67,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "category", key = "#id"),
-            @CacheEvict(value = "categoryList", allEntries = true)
+            @CacheEvict(value = SINGLE_CATEGORY_CACHE, key = "#id"),
+            @CacheEvict(value = CATEGORY_LIST_CACHE, allEntries = true)
     })
     @Transactional
     @Override

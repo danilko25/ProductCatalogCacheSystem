@@ -37,27 +37,30 @@ public class ProductServiceImpl implements ProductService {
     private final ProductReadDtoMapper  productReadDtoMapper;
     private final ProductCreateEditMapper productCreateEditDtoMapper;
 
+    private static final String PRODUCT_LIST_CACHE = "productList";
+    private static final String SINGLE_PRODUCT_CACHE = "product";
+
     @Override
     public Page<ProductReadDto> findAll(Pageable pageable) {
         var products = productRepository.findAllWithCategory(pageable);
         return products.map(productReadDtoMapper::mapFrom);
     }
 
-    @Cacheable(value = "productList", key = "#id")
+    @Cacheable(value = PRODUCT_LIST_CACHE, key = "#id")
     @Override
     public List<ProductReadDto> findByCategoryId(Long id) {
         var productsByCategory = productRepository.findAllByCategoryId(id);
         return productsByCategory.stream().map(productReadDtoMapper::mapFrom).toList();
     }
 
-    @Cacheable(value = "product", key = "#id")
+    @Cacheable(value = SINGLE_PRODUCT_CACHE, key = "#id")
     @Override
     public ProductReadDto findById(Long id) {
         var productOptional = productRepository.findById(id);
         return productOptional.map(productReadDtoMapper::mapFrom).orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
     }
 
-    @CacheEvict(value = "productList",  key = "#productCreateEditDto.categoryId")
+    @CacheEvict(value = PRODUCT_LIST_CACHE,  key = "#productCreateEditDto.categoryId")
     @Transactional
     @Override
     public ProductReadDto save(ProductCreateEditDto productCreateEditDto) {
@@ -73,8 +76,8 @@ public class ProductServiceImpl implements ProductService {
         return productReadDtoMapper.mapFrom(savedProduct);
     }
 
-    @CacheEvict(value = "productList",  key = "#productCreateEditDto.categoryId")
-    @CachePut(value = "product", key = "#id")
+    @CacheEvict(value = PRODUCT_LIST_CACHE,  key = "#productCreateEditDto.categoryId")
+    @CachePut(value = SINGLE_PRODUCT_CACHE, key = "#id")
     @Transactional
     @Override
     public ProductReadDto update(Long id, ProductCreateEditDto productCreateEditDto) throws MethodArgumentNotValidException {
@@ -105,8 +108,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "product", key = "#id"),
-            @CacheEvict(value = "productList", allEntries = true)
+            @CacheEvict(value = SINGLE_PRODUCT_CACHE, key = "#id"),
+            @CacheEvict(value = PRODUCT_LIST_CACHE, allEntries = true)
     })
     @Transactional
     @Override
