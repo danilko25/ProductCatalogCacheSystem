@@ -4,7 +4,6 @@ import com.danilko.product_catalog_cache_system.dto.create_edit.ProductCreateEdi
 import com.danilko.product_catalog_cache_system.entity.Category;
 import com.danilko.product_catalog_cache_system.entity.Product;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -50,20 +49,23 @@ class ProductCreateEditMapperTest {
 
     @Test
     void testMapTo_ValidDtoAndUpdateExistingEntity() {
-        Category existingCategory = new Category(2L, "Existing Category");
+        Category existingCategory = Category.builder()
+                .id(2L)
+                .name("Existing Category")
+                .build();
         LocalDateTime existingCreationDate = LocalDateTime.now().minusDays(5);
         LocalDateTime existingUpdateDate = LocalDateTime.now().minusDays(1);
 
-        Product existingProduct = new Product(
-                10L,
-                "Old Name",
-                "Old Description",
-                new BigDecimal("10.00"),
-                existingCategory,
-                5,
-                existingCreationDate,
-                existingUpdateDate
-        );
+        Product existingProduct = Product.builder()
+                .id(10L)
+                .name("Old Name")
+                .description("Old Description")
+                .price(new BigDecimal("10.00"))
+                .category(existingCategory)
+                .stock(5)
+                .creationDate(existingCreationDate)
+                .lastUpdateDate(existingUpdateDate)
+                .build();
 
         ProductCreateEditDto dto = new ProductCreateEditDto(
                 "Updated Product Name",
@@ -89,16 +91,19 @@ class ProductCreateEditMapperTest {
 
     @Test
     void testMapTo_NullValuesInDto() {
-        Product existingProduct = new Product(
-                11L,
-                "Old Product",
-                "Old Desc",
-                new BigDecimal("20.00"),
-                new Category(3L, "Some Category"),
-                10,
-                LocalDateTime.now().minusDays(10),
-                LocalDateTime.now().minusDays(2)
-        );
+        Product existingProduct = Product.builder()
+                .id(11L)
+                .name("Old Product")
+                .description("Old Desc")
+                .price(new BigDecimal("20.00"))
+                .category(Category.builder()
+                        .id(3L)
+                        .name("Some Category")
+                        .build())
+                .stock(10)
+                .creationDate(LocalDateTime.now().minusDays(10))
+                .lastUpdateDate(LocalDateTime.now().minusDays(2))
+                .build();
 
         ProductCreateEditDto dto = new ProductCreateEditDto(
                 "Product With Null Desc",

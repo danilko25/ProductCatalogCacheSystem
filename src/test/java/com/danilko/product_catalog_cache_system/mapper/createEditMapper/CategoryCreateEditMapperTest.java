@@ -30,7 +30,10 @@ class CategoryCreateEditMapperTest {
 
     @Test
     void testMapTo_ValidDtoAndUpdateExistingEntity() {
-        Category existingCategory = new Category(1L, "Old Category Name");
+        Category existingCategory = Category.builder()
+                .id(1L)
+                .name("Old Category Name")
+                .build();
 
         CategoryCreateEditDto dto = new CategoryCreateEditDto("Updated Category Name");
 

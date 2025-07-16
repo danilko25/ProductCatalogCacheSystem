@@ -22,7 +22,10 @@ class CategoryReadDtoMapperTest {
 
     @Test
     void testMapFrom_ValidCategory() {
-        Category category = new Category(1L, "Electronics");
+        Category category = Category.builder()
+                .id(1L)
+                .name("Electronics")
+                .build();
 
         CategoryReadDto dto = categoryReadDtoMapper.mapFrom(category);
 
