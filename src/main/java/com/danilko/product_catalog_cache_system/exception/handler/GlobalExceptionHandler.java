@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        log.error(ex.getCause().toString());
+        log.error(Arrays.toString(ex.getStackTrace()));
         Map<String, Object> errors = new HashMap<>();
         errors.put("status", HttpStatus.BAD_REQUEST.value());
         errors.put("error", "Validation Error");
@@ -31,7 +32,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleEntityNotFoundException(EntityNotFoundException ex) {
-        log.error(ex.getCause().toString());
+        log.error(Arrays.toString(ex.getStackTrace()));
         Map<String, Object> errors = new HashMap<>();
         errors.put("status", HttpStatus.NOT_FOUND.value());
         errors.put("error", "Entity not found");
@@ -42,7 +43,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
-        log.error(ex.getCause().toString());
+        log.error(Arrays.toString(ex.getStackTrace()));
         Map<String, Object> errors = new HashMap<>();
         errors.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         errors.put("error", "Internal Server Error");
