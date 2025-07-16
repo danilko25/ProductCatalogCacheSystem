@@ -3,18 +3,20 @@ package com.danilko.product_catalog_cache_system.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Product extends BaseEntity<Long> {
     @Column(nullable = false)
     private String name;
     private String description;

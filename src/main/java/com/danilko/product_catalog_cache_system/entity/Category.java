@@ -1,18 +1,23 @@
 package com.danilko.product_catalog_cache_system.entity;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Data
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Category {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@EqualsAndHashCode(callSuper = false)
+public class Category extends BaseEntity<Long> {
+
     @Column(name = "category_name", nullable = false)
     private String name;
+
+
+    public String toString() {
+        return "Category(super=" + this.getId() + ", name=" + this.getName() + ")";
+    }
 }
