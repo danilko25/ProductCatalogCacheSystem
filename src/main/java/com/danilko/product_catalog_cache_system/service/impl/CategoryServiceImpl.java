@@ -29,6 +29,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     private static final String CATEGORY_LIST_CACHE = "categoryList";
     private static final String SINGLE_CATEGORY_CACHE = "category";
+    private static final String PRODUCT_LIST_CACHE = "productList";
+
 
     @Cacheable(value = CATEGORY_LIST_CACHE)
     @Override
@@ -52,8 +54,15 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryReadDtoMapper.mapFrom(savedCategory);
     }
 
-    @CacheEvict(value = CATEGORY_LIST_CACHE, allEntries = true)
-    @CachePut(value = SINGLE_CATEGORY_CACHE, key = "#id")
+    @Caching(
+            evict = {
+                    @CacheEvict(value = CATEGORY_LIST_CACHE, allEntries = true),
+                    @CacheEvict(value = PRODUCT_LIST_CACHE, key = "#id")
+            },
+            put = {
+                    @CachePut(value = SINGLE_CATEGORY_CACHE, key = "#id")
+            }
+    )
     @Transactional
     @Override
     public CategoryReadDto update(Long id, CategoryCreateEditDto categoryCreateEditDto) {
